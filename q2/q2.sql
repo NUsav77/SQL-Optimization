@@ -11,4 +11,21 @@ SET @v7 = 'EE';
 SET @v8 = 'MAT';
 
 -- 2. List the names of students with id in the range of v2 (id) to v3 (inclusive).
+
 SELECT name FROM Student WHERE id BETWEEN @v2 AND @v3;
+
+-- OPTIMIZATION STEP 1
+-- Create index on id column
+
+CREATE INDEX id_index
+ON student (id);
+
+-- OPTIMIZATION STEP 2
+-- Create index on both id and name column
+
+CREATE INDEX id_index
+ON student (id, name);
+
+SELECT name 
+FROM Student 
+WHERE id BETWEEN @v2 AND @v3;
