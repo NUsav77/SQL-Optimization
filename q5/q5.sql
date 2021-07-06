@@ -11,8 +11,43 @@ SET @v7 = 'EE';
 SET @v8 = 'MAT';
 
 -- 5. List the names of students who have taken a course from department v6 (deptId), but not v7.
-SELECT * FROM Student, 
-	(SELECT studId FROM Transcript, Course WHERE deptId = @v6 AND Course.crsCode = Transcript.crsCode
-	AND studId NOT IN
-	(SELECT studId FROM Transcript, Course WHERE deptId = @v7 AND Course.crsCode = Transcript.crsCode)) as alias
-WHERE Student.id = alias.studId;
+
+
+SELECT 
+    *
+FROM
+    Student,
+    (SELECT 
+        studId
+    FROM
+        Transcript, Course
+    WHERE
+        deptId = @v6
+            AND Course.crsCode = Transcript.crsCode
+            AND studId NOT IN (SELECT 
+                studId
+            FROM
+                Transcript, Course
+            WHERE
+                deptId = @v7
+                    AND Course.crsCode = Transcript.crsCode)) AS alias
+WHERE
+    Student.id = alias.studId;
+
+-- OPTIMIZATION Step 1
+-- Create index for each primary key column
+
+CREATE INDEX index_t_crsCode
+ON transcript (crsCode);
+
+CREATE INDEX index_c_crsCode
+ON course (crsCode);
+
+CREATE INDEX index_id
+ON student (id);
+
+-- OPTIMIZATION Step 2
+-- Create non-clustered index on course deptId.
+
+CREATE INDEX index_deptId
+ON course (deptId);
